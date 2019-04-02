@@ -1,0 +1,25 @@
+version: "3"
+services:
+  app:
+    container_name: node
+    restart: always
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - "./:/usr/src/app"
+    depends_on:
+      - "mongo"
+  mongo:
+    container_name: mongo
+    image: "mongo"
+    ports:
+      - "27017:27017"
+
+  adminmongo:
+    container_name: adminmongo
+    image: "mrvautin/adminmongo"
+    ports:
+      - "1234:1234"
+    environment:
+      - HOST=0.0.0.0
