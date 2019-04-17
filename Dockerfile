@@ -1,8 +1,10 @@
-FROM node:10
+FROM node:latest
 
 # WORKDIR /usr/src/app
 
-COPY package*.json ./
+COPY package.json .
+
+COPY package-lock.json .
 
 RUN npm install
 
@@ -10,4 +12,4 @@ COPY . .
 
 EXPOSE 3000
 
-CMD ["npm", "start"] 
+CMD ["node", "index.js"] 
