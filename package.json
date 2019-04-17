@@ -1,7 +1,7 @@
 {
   "name": "docker_node_mongo",
   "version": "1.0.0",
-  "description": "",
+  "description": "Docker + Express.js + MongoDB",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"

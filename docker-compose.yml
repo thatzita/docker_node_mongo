@@ -1,21 +1,25 @@
 version: "3"
 services:
   app:
-    container_name: node
+    container_name: express
     restart: always
     build: .
     ports:
       - "3000:3000"
-    volumes:
-      - "./:/usr/src/app"
-    depends_on:
+    links:
       - "mongo"
+    networks:
+      - "webappnetwork"
   mongo:
     container_name: mongo
     image: "mongo"
     ports:
       - "27017:27017"
-
+    volumes:
+      # - "//c/Users/db:/data/db"
+      - "/pokemonDB:/data/db"
+    networks:
+      - "webappnetwork"
   adminmongo:
     container_name: adminmongo
     image: "mrvautin/adminmongo"
@@ -23,3 +27,8 @@ services:
       - "1234:1234"
     environment:
       - HOST=0.0.0.0
+    networks:
+      - "webappnetwork"
+networks:
+  webappnetwork:
+    driver: bridge
