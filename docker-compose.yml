@@ -6,10 +6,12 @@ services:
     build: .
     ports:
       - "3000:3000"
+    depends_on:
+      - mongo
     links:
-      - "mongo"
-    networks:
-      - "webappnetwork"
+      - mongo
+    environment:
+      WAIT_HOSTS: mongo:27017
   mongo:
     container_name: mongo
     image: mongo
@@ -18,17 +20,46 @@ services:
     volumes:
       # - "//c/Users/db:/data/db"
       - "/pokemonDB:/data/db"
-    networks:
-      - "webappnetwork"
   adminmongo:
     container_name: adminmongo
-    image: "mrvautin/adminmongo"
+    image: mrvautin/adminmongo
+    volumes:
+      - "/pokemonDB:/data/db"
     ports:
       - "1234:1234"
     environment:
       - HOST=0.0.0.0
-    networks:
-      - "webappnetwork"
-networks:
-  webappnetwork:
-    driver: bridge
+# version: "3"
+# services:
+#   app:
+#     container_name: express
+#     restart: always
+#     build: .
+#     ports:
+#       - "3000:3000"
+#     links:
+#       - "mongo"
+#     networks:
+#       - "webappnetwork"
+#   mongo:
+#     container_name: mongo
+#     image: mongo
+#     ports:
+#       - "27017:27017"
+#     volumes:
+#       # - "//c/Users/db:/data/db"
+#       - "/pokemonDB:/data/db"
+#     networks:
+#       - "webappnetwork"
+#   adminmongo:
+#     container_name: adminmongo
+#     image: "mrvautin/adminmongo"
+#     ports:
+#       - "1234:1234"
+#     environment:
+#       - HOST=0.0.0.0
+#     networks:
+#       - "webappnetwork"
+# networks:
+#   webappnetwork:
+#     driver: bridge

@@ -1,7 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const port = 3000;
-const DATABASE_CONNECTION = "mongodb://192.168.99.100:27017/test";
+const DATABASE_CONNECTION = "mongodb://mongo/test";
 const app = express();
 
 let Schema = mongoose.Schema;
@@ -13,7 +13,7 @@ let pokemonSchema = new Schema(
   { collection: "pokemon" }
 );
 
-let Pokemon = mongoose.model("Pokemon", pokemonSchema);
+const Pokemon = mongoose.model("Pokemon", pokemonSchema);
 
 mongoose
   .connect(DATABASE_CONNECTION, { useNewUrlParser: true })
@@ -29,6 +29,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/api/gottacatchemall", (req, res) => {
+  console.log(req);
   Pokemon.find().then(doc => {
     console.log(doc);
     res.send(doc);
