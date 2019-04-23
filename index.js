@@ -109,24 +109,36 @@ mongoose
 //GET USER
 app.get("/api/getuser", (req, res) => {
   // console.log("headers", req.headers.id);
-  console.log("request", req);
-  console.log("request body", req.body);
+  console.log("request params", req.query.id, req.query.token);
+  // console.log("request body", req.body);
+  let id = req.query.id;
+  let token = req.query,
+    token;
 
-  User.findOne({ id: req.headers.id }, (err, obj) => {
+  User.findOne({ id: id }, (err, obj) => {
     if (err) res.send(err);
     if (obj) {
-      console.log("User exist, update user");
-      createUpdateUser();
+      createUpdateUser(token);
       res.send(obj);
-    } else if (obj === null) {
-      createUpdateUser();
+    } else {
+      createUpdateUser(token);
       res.send("User doesn't exist, create one shall we?");
     }
   });
 });
 
-function createUpdateUser() {
-  // console.log("Function to update user or create if non-existing");
+function createUpdateUser(token) {
+  console.log("instagram token", token);
+  axios
+    .get(
+      `https://api.instagram.com/v1/users/self/media/recent/?access_token=${token}`
+    )
+    .then(res => {
+      console.log(res.data.data);
+    })
+    .catch(err => {
+      console.log(err);
+    });
 }
 
 //UPDATE USER
