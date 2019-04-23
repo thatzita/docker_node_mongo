@@ -219,23 +219,22 @@ async function getAllUserInfo(token) {
 
 //UPDATE USER
 function updateDbWithUser(user) {
-  console.log(user);
-  app.post("/api/updateuser", (req, res) => {
-    let user = new User(user);
-
-    let upsertData = user.toObject();
-    delete upsertData._id;
-    User.findOneAndUpdate(
-      { id: user._id },
-      upsertData,
+  console.log(user.id);
+	console.log(user._id)
+ // app.post("/api/updateuser", (req, res) => {
+    
+    User.update(
+      { id: user.id },
+      user,
       { upsert: true },
       (err, doc) => {
         if (err) console.log(err);
         console.log(doc);
-        res.send(doc);
+	      console.log("FINDONEANDUPDATE")
+        return doc;
       }
     );
-  });
+  //});
 }
 
 //DELETE USER
