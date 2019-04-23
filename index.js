@@ -165,20 +165,54 @@ async function getAllUserInfo(token) {
         let regex = /([^/]+$)/;
         let docId = regex.exec(image_id);
 
-        let pinInformation = {
-          geohash_id: pictureGeohash,
-          followers: userInfo.counts.followed_by,
-          user_id: userInfo.id,
-          image: info.images.standard_resolution.url,
-          image_id: docId[0],
-          location_info: {
-            latitude: info.location.latitude,
-            longitude: info.location.longitude,
-            name: info.location.name
-          }
-        };
+        let caption;
+        if (info.caption !== null) {
+          caption = info.caption.text;
+        } else {
+          caption = "";
+        }
 
-        pinArr.push(pinInformation);
+        if (info.carousel_media) {
+          let carouselArr = [];
+          info.carousel_media.forEach(image => {
+            // console.info(image.images.standard_resolution.url);
+            carouselArr.push(image.images.standard_resolution.url);
+          });
+
+          let pinInformation = {
+            geohash_id: pictureGeohash,
+            followers: userInfo.counts.followed_by,
+            user_id: userInfo.id,
+            profile_picture: userInfo.profile_picture,
+            username: userInfo.username,
+            full_name: userInfo.full_name,
+            carousel: carouselArr,
+            image: info.images.standard_resolution.url,
+            caption: caption,
+            image_id: docId[0],
+            location_info: {
+              latitude: info.location.latitude,
+              longitude: info.location.longitude,
+              name: info.location.name
+            }
+          };
+          pinArr.push(pinInformation);
+        } else {
+          let pinInformation = {
+            geohash_id: pictureGeohash,
+            followers: userInfo.counts.followed_by,
+            user_id: userInfo.id,
+            image: info.images.standard_resolution.url,
+            image_id: docId[0],
+            location_info: {
+              latitude: info.location.latitude,
+              longitude: info.location.longitude,
+              name: info.location.name
+            }
+          };
+
+          pinArr.push(pinInformation);
+        }
       }
     });
 
@@ -220,20 +254,15 @@ async function getAllUserInfo(token) {
 //UPDATE USER
 function updateDbWithUser(user) {
   console.log(user.id);
-	console.log(user._id)
- // app.post("/api/updateuser", (req, res) => {
-    
-    User.update(
-      { id: user.id },
-      user,
-      { upsert: true },
-      (err, doc) => {
-        if (err) console.log(err);
-        console.log(doc);
-	      console.log("FINDONEANDUPDATE")
-        return doc;
-      }
-    );
+  console.log(user._id);
+  // app.post("/api/updateuser", (req, res) => {
+
+  User.update({ id: user.id }, user, { upsert: true }, (err, doc) => {
+    if (err) console.log(err);
+    console.log(doc);
+    console.log("FINDONEANDUPDATE");
+    return doc;
+  });
   //});
 }
 
