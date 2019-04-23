@@ -181,7 +181,6 @@ async function getAllUserInfo(token) {
         pinArr.push(pinInformation);
       }
     });
-    
 
     let user = {
       id: userInfo.id,
@@ -220,13 +219,22 @@ async function getAllUserInfo(token) {
 
 //UPDATE USER
 function updateDbWithUser(user) {
-console.log(user)	
+  console.log(user);
   app.post("/api/updateuser", (req, res) => {
-    User.findOneAndUpdate(user, { upsert: true }, (err, doc) => {
-      if (err) console.log(err);
-	    console.log(doc)
-     // res.send(doc);
-    });
+    let user = new User(user);
+
+    let upsertData = user.toObject();
+    delete upsertData._id;
+    User.findOneAndUpdate(
+      { id: user._id },
+      upsertData,
+      { upsert: true },
+      (err, doc) => {
+        if (err) console.log(err);
+        console.log(doc);
+        res.send(doc);
+      }
+    );
   });
 }
 
