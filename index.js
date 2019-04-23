@@ -114,8 +114,7 @@ app.get("/api/getuser", (req, res) => {
   console.log("request params", req.query.id, req.query.token);
   // console.log("request body", req.body);
   let id = req.query.id;
-  let token = req.query,
-    token;
+  let token = req.query.token;
 
   User.findOne({ id: id }, (err, obj) => {
     if (err) res.send(err);
@@ -167,8 +166,8 @@ async function getAllUserInfo(token) {
 
         let pinInformation = {
           geohash_id: pictureGeohash,
-          followers: userData.userInfo.counts.followed_by,
-          user_id: userData.userInfo.id,
+          followers: userInfo.counts.followed_by,
+          user_id: userInfo.id,
           image: info.images.standard_resolution.url,
           image_id: docId[0],
           location_info: {
@@ -182,16 +181,61 @@ async function getAllUserInfo(token) {
       }
     });
     console.log(pinArr);
+
+    let user = {
+      id: userInfo.id,
+      username: userInfo.username,
+      profile_picture: userInfo.profile_picture,
+      full_name: userInfo.full_name,
+      bio: userInfo.bio,
+      website: userInfo.website,
+      followers: userInfo.counts.followed_by,
+      geohash: pinArr
+    };
+
+    updateDbWithUser(user);
+
+    // db.collection("users")
+    //   .doc(user.id)
+    //   .set({ user });
+
+    // const geohashRef = db
+    //   .collection("users")
+    //   .doc(user.id)
+    //   .collection("geohash");
+
+    // pinArr.forEach(val => {
+    //   let regex = /([^/]+$)/;
+    //   let docId = regex.exec(val.image);
+
+    //   db.collection("users")
+    //     .doc(user.id)
+    //     .collection("geohash")
+    //     .doc(docId[0])
+    //     .set(val);
+    // });
   }
 }
 
 //UPDATE USER
-app.post("/api/updateuser", (req, res) => {
-  User.find().then(doc => {
-    console.log(doc);
-    res.send(doc);
+function updateDbWithUser(user) {
+  app.post("/api/updateuser", (req, res) => {
+    User.find().then(doc => {
+      console.log(doc);
+      res.send(doc);
+    });
   });
-});
+  axios
+    .post("/api/updateuser", {
+      user
+    })
+    .then(function(response) {
+      console.log(response);
+    })
+    .catch(function(error) {
+      console.log(error);
+    });
+}
 
 //DELETE USER
 app.delete("/api/deleteuser", (req, res) => {
