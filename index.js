@@ -1,8 +1,10 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const axios = require("axios");
+const Geohash = require("latlon-geohash");
 const port = 3000;
-// const DATABASE_CONNECTION = "mongodb://mongo/indulge";
-const DATABASE_CONNECTION = "mongodb://192.168.99.100:27017/indulge";
+const DATABASE_CONNECTION = "mongodb://mongo/indulge";
+// const DATABASE_CONNECTION = "mongodb://192.168.99.100:27017/indulge";
 const app = express();
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -118,27 +120,69 @@ app.get("/api/getuser", (req, res) => {
   User.findOne({ id: id }, (err, obj) => {
     if (err) res.send(err);
     if (obj) {
-      createUpdateUser(token);
-      res.send(obj);
+      getAllUserInfo(token);
     } else {
-      createUpdateUser(token);
-      res.send("User doesn't exist, create one shall we?");
+      getAllUserInfo(token);
     }
   });
 });
 
-function createUpdateUser(token) {
+async function getAllUserInfo(token) {
   console.log("instagram token", token);
-  axios
-    .get(
-      `https://api.instagram.com/v1/users/self/media/recent/?access_token=${token}`
-    )
+  let userInfo = null;
+  let userData = null;
+
+  await axios
+    .get(`https://api.instagram.com/v1/users/self/?access_token=${token}`)
     .then(res => {
-      console.log(res.data.data);
+      userInfo = res.data.data;
     })
     .catch(err => {
       console.log(err);
     });
+
+  await axios
+    .get(
+      `https://api.instagram.com/v1/users/self/media/recent/?access_token=${token}`
+    )
+    .then(res => {
+      userData = res.data.data;
+      console.log(userData);
+    })
+    .catch(err => {
+      console.log(err);
+    });
+
+  if (userInfo && userData) {
+    userData.forEach(info => {
+      if (info.location) {
+        let pictureGeohash = Geohash.encode(
+          info.location.latitude,
+          info.location.longitude
+        ).substring(0, 6);
+
+        let image_id = info.images.standard_resolution.url;
+        let regex = /([^/]+$)/;
+        let docId = regex.exec(image_id);
+
+        let pinInformation = {
+          geohash_id: pictureGeohash,
+          followers: userData.userInfo.counts.followed_by,
+          user_id: userData.userInfo.id,
+          image: info.images.standard_resolution.url,
+          image_id: docId[0],
+          location_info: {
+            latitude: info.location.latitude,
+            longitude: info.location.longitude,
+            name: info.location.name
+          }
+        };
+
+        pinArr.push(pinInformation);
+      }
+    });
+    console.log(pinArr);
+  }
 }
 
 //UPDATE USER
