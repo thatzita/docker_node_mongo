@@ -153,6 +153,7 @@ async function getAllUserInfo(token) {
     });
 
   if (userInfo && userData) {
+    let pinArr = [];
     userData.forEach(info => {
       if (info.location) {
         let pictureGeohash = Geohash.encode(
@@ -220,21 +221,11 @@ async function getAllUserInfo(token) {
 //UPDATE USER
 function updateDbWithUser(user) {
   app.post("/api/updateuser", (req, res) => {
-    User.find().then(doc => {
-      console.log(doc);
+    User.findOneAndUpdate(user, { upsert: true }, (err, doc) => {
+      if (err) console.log(err);
       res.send(doc);
     });
   });
-  axios
-    .post("/api/updateuser", {
-      user
-    })
-    .then(function(response) {
-      console.log(response);
-    })
-    .catch(function(error) {
-      console.log(error);
-    });
 }
 
 //DELETE USER
