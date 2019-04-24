@@ -239,7 +239,6 @@ async function updatePictures(arr, id) {
 
   await Location.deleteMany({ user_id: id }, (err, doc) => {
     if (err) console.log(err);
-    
   });
 
   await pinArr.forEach(pin => {
@@ -275,7 +274,7 @@ function updateDbWithUser(user) {
 //DELETE USER
 app.delete("/api/deleteuser", (req, res) => {
   User.find().then(doc => {
-//    console.log(doc);
+    //    console.log(doc);
     res.send(doc);
   });
 });
@@ -283,10 +282,16 @@ app.delete("/api/deleteuser", (req, res) => {
 ////////
 //GEOHASH//
 app.put("/api/geohash", (req, res) => {
- // console.log(req)
-	console.log("body", req.body.data);
-//	console.log("data", req.data)
-//	console.log("headers", req.headers)
+  console.log("body", req.body.data);
+  let geohashArr = req.body.data;
+
+  Location.find({
+    geohash_id: { $in: geohashArr },
+    function(err, doc) {
+      if (err) console.log(err);
+      console.log(doc);
+    }
+  });
 });
 ////////
 
@@ -308,7 +313,7 @@ app.get("/api/getuser", (req, res) => {
 //UPDATE USER PICTURES
 app.post("/api/updateuser", (req, res) => {
   User.find().then(doc => {
-    console.log("userpic",doc);
+    console.log("userpic", doc);
     res.send(doc);
   });
 });
