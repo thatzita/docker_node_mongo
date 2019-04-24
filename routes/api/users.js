@@ -3,8 +3,8 @@ const router = express.Router();
 const axios = require("axios");
 const Geohash = require("latlon-geohash");
 const bodyParser = require("body-parser");
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+router.use(bodyParser.json());
+router.use(bodyParser.urlencoded({ extended: true }));
 
 router.get("/getuser", (req, res) => {
   let id = req.query.id;
@@ -157,3 +157,5 @@ function updateDbWithUser(user) {
     return doc;
   });
 }
+
+module.exports = router;

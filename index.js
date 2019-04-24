@@ -6,8 +6,8 @@ const port = 3000;
 const DATABASE_CONNECTION = "mongodb://mongo/indulge";
 // const DATABASE_CONNECTION = "mongodb://192.168.99.100:27017/indulge";
 
-const users = require("./routers/api/users.js");
-const locations = require("./routers/api/locations.js");
+const users = require("./routes/api/users.js");
+const locations = require("./routes/api/locations.js");
 
 const app = express();
 const bodyParser = require("body-parser");
@@ -236,6 +236,6 @@ app.use("/api/locations/geohash", locations);
 //     });
 // });
 
-// app.listen(port, () => {
-//   console.log("Lyssnar på port " + port);
-// });
+ app.listen(port, () => {
+   console.log("Lyssnar på port " + port);
+});

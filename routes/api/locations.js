@@ -3,8 +3,8 @@ const router = express.Router();
 const axios = require("axios");
 const Geohash = require("latlon-geohash");
 const bodyParser = require("body-parser");
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+router.use(bodyParser.json());
+router.use(bodyParser.urlencoded({ extended: true }));
 
 router.put("/api/geohash", (req, res) => {
   let geohashArr = req.body.data;
@@ -18,6 +18,8 @@ router.put("/api/geohash", (req, res) => {
     });
 });
 
-app.listen(port, () => {
-  console.log("Lyssnar på port " + port);
-});
+// app.listen(port, () => {
+  //console.log("Lyssnar på port " + port);
+// });
+//
+module.exports = router;
