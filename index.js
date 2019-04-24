@@ -86,6 +86,7 @@ let locationSchema = new Schema(
     geohash_id: String,
     image: String,
     image_id: String,
+	  carousel: Array,
     location_info: {
       latitude: String,
       longitude: String,
@@ -157,6 +158,7 @@ async function getAllUserInfo(token) {
     let pinArr = [];
     userData.forEach(info => {
       if (info.location) {
+	     
         let pictureGeohash = Geohash.encode(
           info.location.latitude,
           info.location.longitude
@@ -174,12 +176,13 @@ async function getAllUserInfo(token) {
         }
 
         if (info.carousel_media) {
+	//	console.log(info.carousel_media)
           let carouselArr = [];
           info.carousel_media.forEach(image => {
-            // console.info(image.images.standard_resolution.url);
+//            console.info(image.images.standard_resolution.url);
             carouselArr.push(image.images.standard_resolution.url);
           });
-
+		console.log("carouselArr", carouselArr)
           let pinInformation = {
             geohash_id: pictureGeohash,
             followers: userInfo.counts.followed_by,
@@ -239,12 +242,13 @@ async function getAllUserInfo(token) {
 
 async function updatePictures(arr, id) {
   let pinArr = arr;
-
+	console.log("PINARR", pinArr)
   await Location.deleteMany({ user_id: id }, (err, doc) => {
     if (err) console.log(err);
   });
 
   await pinArr.forEach(pin => {
+//	  console.log("pin",pin);
     let query = pin.image_id;
     let options = {
       upsert: true,
@@ -291,7 +295,7 @@ app.put("/api/geohash", (req, res) => {
   Location.find()
 	.where("geohash_id").in(geohashArr).exec((err,doc)=>{
 	if(err) console.log(err);
-		console.log(doc)
+//		console.log(doc)
 		res.send(doc)
 	})
 });
