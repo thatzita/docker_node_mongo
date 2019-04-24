@@ -1,10 +1,32 @@
 const express = require("express");
+const mongoose = require("mongoose");
 const router = express.Router();
 const axios = require("axios");
 const Geohash = require("latlon-geohash");
 const bodyParser = require("body-parser");
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
+
+const User = require("../../models/User");
+
+let Schema = mongoose.Schema;
+
+// let userSchema = new Schema(
+//   {
+//     name: String,
+//     followers: Number,
+//     full_name: String,
+//     profile_picture: String,
+//     geohash: Array,
+//     username: String,
+//     website: String,
+//     id: String,
+//     bio: String
+//   },
+//   { collection: "users" }
+// );
+
+// const User = mongoose.model("User", userSchema);
 
 router.get("/getuser", (req, res) => {
   let id = req.query.id;
