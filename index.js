@@ -282,16 +282,14 @@ app.delete("/api/deleteuser", (req, res) => {
 ////////
 //GEOHASH//
 app.put("/api/geohash", (req, res) => {
-  console.log("body", req.body.data);
+  //console.log("body", req.body.data);
   let geohashArr = req.body.data;
 
-  Location.find({
-    geohash_id: { $in: geohashArr },
-    function(err, doc) {
-      if (err) console.log(err);
-      console.log(doc);
-    }
-  });
+  Location.find()
+	.where("geohash_id").in(geohashArr).exec((err,doc)=>{
+	if(err) console.log(err);
+		console.log(doc)
+	})
 });
 ////////
 
