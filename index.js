@@ -7,7 +7,8 @@ const DATABASE_CONNECTION = "mongodb://mongo/indulge";
 // const DATABASE_CONNECTION = "mongodb://192.168.99.100:27017/indulge";
 const app = express();
 const bodyParser = require("body-parser");
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 let Schema = mongoose.Schema;
 
@@ -233,15 +234,15 @@ async function getAllUserInfo(token) {
   }
 }
 
-function updatePictures(arr, id) {
+async function updatePictures(arr, id) {
   let pinArr = arr;
 
-  Location.deleteMany({ user_id: id }, (err, doc) => {
+  await Location.deleteMany({ user_id: id }, (err, doc) => {
     if (err) console.log(err);
-    console.log(doc);
+    
   });
 
-  pinArr.forEach(pin => {
+  await pinArr.forEach(pin => {
     let query = pin.image_id;
     let options = {
       upsert: true,
@@ -253,7 +254,7 @@ function updatePictures(arr, id) {
       options,
       (err, doc) => {
         if (err) console.log(err);
-        console.log(doc);
+        // console.log(doc);
       }
     );
   });
@@ -274,15 +275,18 @@ function updateDbWithUser(user) {
 //DELETE USER
 app.delete("/api/deleteuser", (req, res) => {
   User.find().then(doc => {
-    console.log(doc);
+//    console.log(doc);
     res.send(doc);
   });
 });
 
 ////////
 //GEOHASH//
-app.get("/api/geohash", (req, res) => {
-  console.log(req.body);
+app.put("/api/geohash", (req, res) => {
+ // console.log(req)
+	console.log("body", req.body.data);
+//	console.log("data", req.data)
+//	console.log("headers", req.headers)
 });
 ////////
 
@@ -304,7 +308,7 @@ app.get("/api/getuser", (req, res) => {
 //UPDATE USER PICTURES
 app.post("/api/updateuser", (req, res) => {
   User.find().then(doc => {
-    console.log(doc);
+    console.log("userpic",doc);
     res.send(doc);
   });
 });
