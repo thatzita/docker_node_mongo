@@ -204,6 +204,7 @@ async function getAllUserInfo(token) {
             user_id: userInfo.id,
             image: info.images.standard_resolution.url,
             image_id: docId[0],
+            caption: caption,
             location_info: {
               latitude: info.location.latitude,
               longitude: info.location.longitude,
@@ -228,6 +229,7 @@ async function getAllUserInfo(token) {
     };
 
     updateDbWithUser(user);
+    updatePictures(pinArr, userInfo.id);
 
     // db.collection("users")
     //   .doc(user.id)
@@ -251,16 +253,107 @@ async function getAllUserInfo(token) {
   }
 }
 
+function updatePictures(arr, id) {
+  // const db = firebase.firestore();
+
+  // const geohashRef = db
+  //   .collection("users")
+  //   .doc(id)
+  //   .collection("geohash");
+
+  let pinArr = arr;
+  let options = {
+    upsert: true,
+    returnOriginal: false
+  };
+
+  // geohashRef
+  //   .get()
+  //   .then(data => {
+  //     data.forEach(val => {
+  //       let existOrNot = pinArr.findIndex(
+  //         x => x.image_id === val._data.image_id
+  //       );
+  //       if (existOrNot === -1) {
+  //         geohashRef
+  //           .doc(val._data.image_id)
+  //           .delete()
+  //           .then(() => {
+  //             console.log("deleted");
+  //           });
+  //         db.collection("locations")
+  //           .doc(val._data.geohash_id)
+  //           .collection(val._data.geohash_id)
+  //           .doc(val._data.image_id)
+  //           .delete()
+  //           .then(() => console.log("deleted here aswell"));
+  //       }
+  //     });
+  //   })
+  // .then(() => {
+  // const dbUsers = firebase.firestore().collection("users");
+  let array = [];
+
+  pinArr.forEach(pin => {
+    let query = pin.image_id;
+    Location.findOneAndUpdate(
+      { image_id: query, user_id: id },
+      pin,
+      options,
+      (err, doc) => {
+        if (err) console.log(err);
+        console.log(doc);
+      }
+    );
+  });
+
+  dbUsers
+    .doc(id)
+    .collection("geohash")
+    .get()
+    .then(function(querySnapshot) {
+      querySnapshot.forEach(function(doc) {
+        array.push(doc.data());
+      });
+      const dbLocation = firebase.firestore().collection("locations");
+      array.forEach(pin => {
+        dbLocation
+          .doc(pin.geohash_id)
+          .get()
+          .then(doc => {
+            if (doc.exists) {
+              dbLocation
+                .doc(pin.geohash_id)
+                .collection(pin.geohash_id)
+                .doc(pin.image_id)
+                .set(pin);
+            } else {
+              dbLocation.doc(pin.geohash_id).set({});
+              dbLocation
+                .doc(pin.geohash_id)
+                .collection(pin.geohash_id)
+                .doc(pin.image_id)
+                .set(pin);
+            }
+          });
+      });
+    })
+    .catch(err => console.log(err));
+  // });
+}
+
 //UPDATE USER
 function updateDbWithUser(user) {
   console.log(user.id);
-  console.log(user._id);
-  // app.post("/api/updateuser", (req, res) => {
 
-  User.update({ id: user.id }, user, { upsert: true }, (err, doc) => {
+  // app.post("/api/updateuser", (req, res) => {
+  let options = {
+    upsert: true,
+    returnOriginal: false
+  };
+
+  User.findOneAndUpdate({ id: user.id }, user, options, (err, doc) => {
     if (err) console.log(err);
-    console.log(doc);
-    console.log("FINDONEANDUPDATE");
     return doc;
   });
   //});
