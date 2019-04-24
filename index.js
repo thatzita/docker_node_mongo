@@ -262,10 +262,6 @@ function updatePictures(arr, id) {
   //   .collection("geohash");
 
   let pinArr = arr;
-  let options = {
-    upsert: true,
-    returnOriginal: false
-  };
 
   // geohashRef
   //   .get()
@@ -294,8 +290,17 @@ function updatePictures(arr, id) {
   // const dbUsers = firebase.firestore().collection("users");
   let array = [];
 
+  Location.deleteMany({ user_id: id }, (err, doc) => {
+    if (err) console.log(err);
+    console.log(doc);
+  });
+
   pinArr.forEach(pin => {
     let query = pin.image_id;
+    let options = {
+      upsert: true,
+      returnOriginal: false
+    };
     Location.findOneAndUpdate(
       { image_id: query, user_id: id },
       pin,
@@ -307,38 +312,38 @@ function updatePictures(arr, id) {
     );
   });
 
-  dbUsers
-    .doc(id)
-    .collection("geohash")
-    .get()
-    .then(function(querySnapshot) {
-      querySnapshot.forEach(function(doc) {
-        array.push(doc.data());
-      });
-      const dbLocation = firebase.firestore().collection("locations");
-      array.forEach(pin => {
-        dbLocation
-          .doc(pin.geohash_id)
-          .get()
-          .then(doc => {
-            if (doc.exists) {
-              dbLocation
-                .doc(pin.geohash_id)
-                .collection(pin.geohash_id)
-                .doc(pin.image_id)
-                .set(pin);
-            } else {
-              dbLocation.doc(pin.geohash_id).set({});
-              dbLocation
-                .doc(pin.geohash_id)
-                .collection(pin.geohash_id)
-                .doc(pin.image_id)
-                .set(pin);
-            }
-          });
-      });
-    })
-    .catch(err => console.log(err));
+  // dbUsers
+  //   .doc(id)
+  //   .collection("geohash")
+  //   .get()
+  //   .then(function(querySnapshot) {
+  //     querySnapshot.forEach(function(doc) {
+  //       array.push(doc.data());
+  //     });
+  //     const dbLocation = firebase.firestore().collection("locations");
+  //     array.forEach(pin => {
+  //       dbLocation
+  //         .doc(pin.geohash_id)
+  //         .get()
+  //         .then(doc => {
+  //           if (doc.exists) {
+  //             dbLocation
+  //               .doc(pin.geohash_id)
+  //               .collection(pin.geohash_id)
+  //               .doc(pin.image_id)
+  //               .set(pin);
+  //           } else {
+  //             dbLocation.doc(pin.geohash_id).set({});
+  //             dbLocation
+  //               .doc(pin.geohash_id)
+  //               .collection(pin.geohash_id)
+  //               .doc(pin.image_id)
+  //               .set(pin);
+  //           }
+  //         });
+  //     });
+  //   })
+  //   .catch(err => console.log(err));
   // });
 }
 
