@@ -289,6 +289,7 @@ app.put("/api/geohash", (req, res) => {
 	.where("geohash_id").in(geohashArr).exec((err,doc)=>{
 	if(err) console.log(err);
 		console.log(doc)
+		res.send(doc)
 	})
 });
 ////////
