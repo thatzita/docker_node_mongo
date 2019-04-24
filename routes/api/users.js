@@ -29,6 +29,7 @@ let Schema = mongoose.Schema;
 // const User = mongoose.model("User", userSchema);
 
 router.get("/getuser", (req, res) => {
+	console.log(req.query.id)
   let id = req.query.id;
   let token = req.query.token;
 

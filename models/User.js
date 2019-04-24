@@ -13,7 +13,7 @@ const userSchema = new Schema(
     id: String,
     bio: String
   },
-  { collection: "users" }
+//  { collection: "users" }
 );
 
-module.exports = User = mongoose.model("User", userSchema);
+module.exports = User = mongoose.model("users", userSchema);

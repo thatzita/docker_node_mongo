@@ -11,7 +11,7 @@ router.use(bodyParser.urlencoded({ extended: true }));
 
 const Location = require("../../models/Location");
 
-router.put("/api/geohash", (req, res) => {
+router.put("/geohash", (req, res) => {
   let geohashArr = req.body.data;
 
   Location.find()
@@ -19,6 +19,7 @@ router.put("/api/geohash", (req, res) => {
     .in(geohashArr)
     .exec((err, doc) => {
       if (err) console.log(err);
+	    console.log(doc)
       res.send(doc);
     });
 });

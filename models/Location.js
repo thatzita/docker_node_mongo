@@ -19,7 +19,7 @@ const locationSchema = new Schema(
     user_id: String,
     username: String
   },
-  { collection: "locations" }
+//  { collection: "locations" }
 );
 
-module.exports = Location = mongoose.model("Location", locationSchema);
+module.exports = Location = mongoose.model("locations", locationSchema);

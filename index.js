@@ -14,47 +14,47 @@ const bodyParser = require("body-parser");
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-let Schema = mongoose.Schema;
+//let Schema = mongoose.Schema;
 
-let userSchema = new Schema(
-  {
-    name: String,
-    followers: Number,
-    full_name: String,
-    profile_picture: String,
-    geohash: Array,
-    username: String,
-    website: String,
-    id: String,
-    bio: String
-  },
-  { collection: "users" }
-);
+// let userSchema = new Schema(
+ // {
+  //  name: String,
+   // followers: Number,
+   // full_name: String,
+   // profile_picture: String,
+   // geohash: Array,
+//    username: String,
+  //  website: String,
+   // id: String,
+   // bio: String
+ // },
+ // { collection: "users" }
+//);
 
-const User = mongoose.model("User", userSchema);
+//const User = mongoose.model("User", userSchema);
 
-let locationSchema = new Schema(
-  {
-    caption: String,
-    followers: Number,
-    full_name: String,
-    geohash_id: String,
-    image: String,
-    image_id: String,
-    carousel: Array,
-    location_info: {
-      latitude: String,
-      longitude: String,
-      name: String
-    },
-    profile_picture: String,
-    user_id: String,
-    username: String
-  },
-  { collection: "locations" }
-);
+//let locationSchema = new Schema(
+ // {
+  //  caption: String,
+   // followers: Number,
+   // full_name: String,
+  //  geohash_id: String,
+  //  image: String,
+  //  image_id: String,
+  //  carousel: Array,
+  //  location_info: {
+   //   latitude: String,
+   //   longitude: String,
+   //   name: String
+   // },
+   // profile_picture: String,
+   // user_id: String,
+   // username: String
+  //},
+  //{ collection: "locations" }
+//);
 
-const Location = mongoose.model("Location", locationSchema);
+//const Location = mongoose.model("Location", locationSchema);
 
 mongoose
   .connect(DATABASE_CONNECTION, { useNewUrlParser: true })
@@ -67,7 +67,7 @@ mongoose
 
 //ROUTES
 app.use("/api/users", users);
-app.use("/api/locations/geohash", locations);
+app.use("/api/locations", locations);
 
 //GET USER
 // app.get("/api/getuser", (req, res) => {
