@@ -13,7 +13,7 @@ const userSchema = new Schema(
     id: String,
     bio: String
   },
-//  { collection: "users" }
+{timestamps: true}
 );
 
 module.exports = User = mongoose.model("users", userSchema);
