@@ -9,27 +9,8 @@ router.use(bodyParser.urlencoded({ extended: true }));
 
 const User = require("../../models/User");
 
-let Schema = mongoose.Schema;
-
-// let userSchema = new Schema(
-//   {
-//     name: String,
-//     followers: Number,
-//     full_name: String,
-//     profile_picture: String,
-//     geohash: Array,
-//     username: String,
-//     website: String,
-//     id: String,
-//     bio: String
-//   },
-//   { collection: "users" }
-// );
-
-// const User = mongoose.model("User", userSchema);
-
 router.get("/getuser", (req, res) => {
-	console.log(req.query.id)
+  console.log(req.query.id);
   let id = req.query.id;
   let token = req.query.token;
 
@@ -76,8 +57,8 @@ async function getAllUserInfo(token) {
         let image_id = info.images.standard_resolution.url;
         let regex = /([^/]+$)/;
         let docId = regex.exec(image_id);
-
         let caption;
+
         if (info.caption !== null) {
           caption = info.caption.text;
         } else {

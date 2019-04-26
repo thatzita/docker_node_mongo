@@ -7,8 +7,6 @@ const bodyParser = require("body-parser");
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
 
-// const Location = mongoose.model("Location", locationSchema);
-
 const Location = require("../../models/Location");
 
 router.put("/geohash", (req, res) => {
@@ -19,13 +17,9 @@ router.put("/geohash", (req, res) => {
     .in(geohashArr)
     .exec((err, doc) => {
       if (err) console.log(err);
-	    console.log(doc)
+      console.log(doc);
       res.send(doc);
     });
 });
 
-// app.listen(port, () => {
-//console.log("Lyssnar på port " + port);
-// });
-//
 module.exports = router;
