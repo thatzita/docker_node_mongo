@@ -5,6 +5,7 @@ const DATABASE_CONNECTION = "mongodb://mongo/indulge";
 const users = require("./routes/api/users.js");
 const locations = require("./routes/api/locations.js");
 const locationInfo = require("./routes/api/locationinfo.js");
+const job = require("cron").CronJob;
 const app = express();
 const bodyParser = require("body-parser");
 
@@ -24,6 +25,10 @@ mongoose
 app.use("/api/users", users);
 app.use("/api/locations", locations);
 app.use("/api/locationinfo", locationInfo);
+
+new job("* * * * *", function() {
+  console.log("running a task every minute");
+});
 
 app.listen(port, () => {
   console.log("Lyssnar på port " + port);

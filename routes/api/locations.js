@@ -17,7 +17,7 @@ router.put("/geohash", (req, res) => {
     .in(geohashArr)
     .exec((err, doc) => {
       if (err) console.log(err);
-      console.log(doc);
+      // console.log(doc);
       res.send(doc);
     });
 });

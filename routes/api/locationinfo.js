@@ -9,9 +9,9 @@ router.use(bodyParser.urlencoded({ extended: true }));
 const LocationInformation = require("../../models/LocationInformation");
 
 router.put("/fbinfo", (req, res) => {
-  let geohashArr = req.body.data;
-  console.log("API CALL");
-  res.send("API CALL");
+  let info = req.body.data;
+  console.log(info);
+  res.send(info);
   //   LocationInformation.find()
   //     .where("geohash_id")
   //     .in(geohashArr)

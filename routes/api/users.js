@@ -10,7 +10,7 @@ router.use(bodyParser.urlencoded({ extended: true }));
 const User = require("../../models/User");
 
 router.get("/getuser", (req, res) => {
-  console.log(req.query.id);
+  // console.log(req.query.id);
   let id = req.query.id;
   let token = req.query.token;
 
