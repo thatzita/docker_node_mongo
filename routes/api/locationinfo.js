@@ -8,18 +8,21 @@ router.use(bodyParser.urlencoded({ extended: true }));
 
 const LocationInformation = require("../../models/LocationInformation");
 
-router.put("/fbinfo", (req, res) => {
+router.put("/fbplaces", (req, res) => {
   let info = req.body.data;
-  console.log(info);
-  res.send(info);
-  //   LocationInformation.find()
-  //     .where("geohash_id")
-  //     .in(geohashArr)
-  //     .exec((err, doc) => {
-  //       if (err) console.log(err);
-  //       console.log(doc);
-  //       res.send(doc);
-  //     });
+
+  LocationInformation.findOne(
+    {
+      name: info.name,
+      latitude: info.lat,
+      longitude: info.lng
+    },
+    function(err, doc) {
+      if (err) console.log(err);
+      console.log("found this ", doc);
+      res.send(doc);
+    }
+  );
 });
 
 module.exports = router;
