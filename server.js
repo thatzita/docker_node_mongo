@@ -43,7 +43,8 @@ app.use("/api/locationinfo", locationInfo);
 // CRONJOB TICKING EVERY 2ND HOUR
 // 0 */2 * * *
 var job = new cronJob({
-  cronTime: "* * * * * ",
+  // cronTime: "* * * * * ",
+  cronTime: "0 */2 * * * ",
   onTick: function() {
     User.find()
       .sort({ updatedAt: 1 })
