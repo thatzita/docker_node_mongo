@@ -1,7 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const axios = require("axios");
-const Geohash = require("latlon-geohash");
 const bodyParser = require("body-parser");
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
@@ -19,7 +17,6 @@ router.put("/fbplaces", (req, res) => {
     },
     function(err, doc) {
       if (err) console.log(err);
-      console.log("found this ", doc);
       res.send(doc);
     }
   );

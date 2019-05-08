@@ -17,8 +17,9 @@ const locationInfo = require("./routes/api/locationInfo.js");
 //CRONJOB
 const cronJob = require("cron").CronJob;
 
-//USER MODEL
+//MODELS
 const User = require("../../models/User");
+const Location = require("../../models/Location");
 
 //BODY-PARSER FOR REQUEST/RESPONSE
 const bodyParser = require("body-parser");
@@ -40,23 +41,51 @@ app.use("/api/users", users);
 app.use("/api/locations", locations);
 app.use("/api/locationinfo", locationInfo);
 
-// CRONJOB TICKING EVERY 2ND HOUR
+// CRONJOB TICKING EVERY 2ND HOUR - UPDATING FROM USER
+// 0 */2 * * *
+// var job = new cronJob({
+//   // cronTime: "* * * * * ",
+//   cronTime: "0 */2 * * *",
+//   onTick: function() {
+//     User.find()
+//       .sort({ updatedAt: 1 })
+//       .limit(2) //oldest first
+//       .exec((err, data) => {
+//         if (err) console.log(err);
+//         data.forEach(user => {
+//           User.findOneAndUpdate(
+//             { id: user.id },
+//             { updatedAt: new Date() },
+//             (err, doc) => {
+//               if (err) console.log(err);
+//               functions.facebookPlaces(user);
+//             }
+//           );
+//         });
+//       });
+//   },
+//   start: false
+// });
+// job.start();
+
+// CRONJOB TICKING EVERY 2ND HOUR - UPDATING FROM LOCATIONS
 // 0 */2 * * *
 var job = new cronJob({
   cronTime: "* * * * * ",
+  // cronTime: "0 */2 * * *",
   onTick: function() {
-    User.find()
+    Location.find()
       .sort({ updatedAt: 1 })
-      .limit(2) //oldest first
+      .limit(50) //oldest first
       .exec((err, data) => {
         if (err) console.log(err);
-        data.forEach(user => {
-          User.findOneAndUpdate(
-            { id: user.id },
+        data.forEach(place => {
+          Location.findOneAndUpdate(
+            { _id: place._id },
             { updatedAt: new Date() },
             (err, doc) => {
               if (err) console.log(err);
-              functions.facebookPlaces(user);
+              functions.facebookPlaces(place);
             }
           );
         });

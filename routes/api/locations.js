@@ -1,7 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const axios = require("axios");
-const Geohash = require("latlon-geohash");
 const bodyParser = require("body-parser");
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
@@ -16,7 +14,6 @@ router.put("/geohash", (req, res) => {
     .in(geohashArr)
     .exec((err, doc) => {
       if (err) console.log(err);
-      // console.log(doc);
       res.send(doc);
     });
 });
