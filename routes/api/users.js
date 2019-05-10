@@ -1,5 +1,4 @@
 const express = require("express");
-const mongoose = require("mongoose");
 const router = express.Router();
 const axios = require("axios");
 const Geohash = require("latlon-geohash");
@@ -10,13 +9,11 @@ router.use(bodyParser.urlencoded({ extended: true }));
 const User = require("../../models/User");
 
 router.get("/getuser", (req, res) => {
-  // console.log(req.query.id);
   let id = req.query.id;
   let token = req.query.token;
 
   User.findOne({ id: id }, (err, doc) => {
     if (err) res.send(err);
-
     getAllUserInfo(token);
   });
 });
@@ -52,7 +49,7 @@ async function getAllUserInfo(token) {
         let pictureGeohash = Geohash.encode(
           info.location.latitude,
           info.location.longitude
-        ).substring(0, 6);
+        );
 
         let image_id = info.images.standard_resolution.url;
         let regex = /([^/]+$)/;

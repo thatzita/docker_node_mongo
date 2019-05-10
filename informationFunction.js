@@ -1,15 +1,9 @@
 const axios = require("axios");
 const LocationInformation = require("../../models/LocationInformation");
-// latitude: 57.7079649,
-// longitude: 11.9408033,
-// name: 'Radisson Blu Riverside Hotel, Gothenburg'
 
 facebookPlaces = place => {
   const token = "530772680664297|AiRN2CSKLnWYiJxtH91A1PUj_aA";
-  console.log(place);
 
-  // data.geohash.forEach(place => {
-  // data.forEach(place => {
   let lat = place.location_info.latitude;
   let lng = place.location_info.longitude;
   let name = place.location_info.name;
@@ -37,6 +31,7 @@ facebookPlaces = place => {
             upsert: true,
             returnOriginal: false
           };
+
           LocationInformation.findOneAndUpdate(
             {
               name: location.name,
@@ -52,7 +47,6 @@ facebookPlaces = place => {
         }
       });
     });
-  // });
 };
 
 module.exports = {
