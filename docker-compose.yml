@@ -18,49 +18,13 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      # - "//c/indulge/db:/data/db"
       - "/indulge:/data/db"
   adminmongo:
     container_name: adminmongo
     image: mrvautin/adminmongo
     volumes:
-      # - "//c/indulge/db:/data/db"
       - "/indulge:/data/db"
     ports:
       - "1234:1234"
     environment:
       - HOST=0.0.0.0
-# version: "3"
-# services:
-#   app:
-#     container_name: express
-#     restart: always
-#     build: .
-#     ports:
-#       - "3000:3000"
-#     links:
-#       - "mongo"
-#     networks:
-#       - "webappnetwork"
-#   mongo:
-#     container_name: mongo
-#     image: mongo
-#     ports:
-#       - "27017:27017"
-#     volumes:
-#       # - "//c/Users/db:/data/db"
-#       - "/pokemonDB:/data/db"
-#     networks:
-#       - "webappnetwork"
-#   adminmongo:
-#     container_name: adminmongo
-#     image: "mrvautin/adminmongo"
-#     ports:
-#       - "1234:1234"
-#     environment:
-#       - HOST=0.0.0.0
-#     networks:
-#       - "webappnetwork"
-# networks:
-#   webappnetwork:
-#     driver: bridge
