@@ -6,29 +6,14 @@ router.use(bodyParser.urlencoded({ extended: true }));
 
 const Location = require("../../models/Location");
 
-router.put("/geohash", (req, res) => {
-  let geohashArr = req.body.data;
-  let result = [];
-  let locationCounter = 0;
-  let shorterResult;
-  geohashArr.forEach((location, index, array) => {
-    Location.find({ geohash_id: new RegExp(location, "i") }, function(
-      err,
-      doc
-    ) {
-      locationCounter++;
-      if (doc.length !== 0) result.push(doc);
-      if (locationCounter === array.length) {
-        if (result.length > 15) {
-          shorterResult = result.slice(0, 14);
-          res.send(shorterResult);
-        } else {
-          shorterResult = result;
-          res.send(shorterResult);
-        }
-      }
+router.put("/box", (req, res) => {
+  let box = req.body.data;
+  Location.where("location_info")
+    .within()
+    .box(box[0], box[1])
+    .exec(function(err, data) {
+      res.send(data);
     });
-  });
 });
 
 module.exports = router;

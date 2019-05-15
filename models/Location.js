@@ -10,11 +10,7 @@ const locationSchema = new Schema(
     image: String,
     image_id: String,
     carousel: Array,
-    location_info: {
-      latitude: String,
-      longitude: String,
-      name: String
-    },
+    location_info: Object,
     profile_picture: String,
     user_id: String,
     username: String
