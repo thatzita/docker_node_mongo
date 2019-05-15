@@ -3,6 +3,7 @@ const LocationInformation = require("../../models/LocationInformation");
 
 facebookPlaces = place => {
   const token = "530772680664297|AiRN2CSKLnWYiJxtH91A1PUj_aA";
+  console.log(place);
 
   let lat = place.location_info.latitude;
   let lng = place.location_info.longitude;

@@ -80,6 +80,8 @@ async function getAllUserInfo(token) {
             caption: caption,
             image_id: docId[0],
             location_info: {
+		type:"Point",
+		coordinates:[info.location.longitude, info.location.latitude],
               latitude: info.location.latitude,
               longitude: info.location.longitude,
               name: info.location.name
@@ -98,6 +100,8 @@ async function getAllUserInfo(token) {
             image_id: docId[0],
             caption: caption,
             location_info: {
+		type: "Point",
+		coordinates:[info.location.longitude,info.location.latitude],
               latitude: info.location.latitude,
               longitude: info.location.longitude,
               name: info.location.name

@@ -12,6 +12,7 @@ const locationInformationSchema = new Schema({
 });
 
 module.exports = LocationInformation = mongoose.model(
-  "fbPlace",
+"fbPlace",
   locationInformationSchema
 );
+
