@@ -52,7 +52,7 @@ async function getAllUserInfo(token) {
         let pictureGeohash = Geohash.encode(
           info.location.latitude,
           info.location.longitude
-        ).substring(0, 6);
+        );
 
         let image_id = info.images.standard_resolution.url;
         let regex = /([^/]+$)/;
@@ -83,6 +83,8 @@ async function getAllUserInfo(token) {
             caption: caption,
             image_id: docId[0],
             location_info: {
+		type:"Point",
+		coordinates:[info.location.longitude, info.location.latitude],
               latitude: info.location.latitude,
               longitude: info.location.longitude,
               name: info.location.name
@@ -101,6 +103,8 @@ async function getAllUserInfo(token) {
             image_id: docId[0],
             caption: caption,
             location_info: {
+		type: "Point",
+		coordinates:[info.location.longitude,info.location.latitude],
               latitude: info.location.latitude,
               longitude: info.location.longitude,
               name: info.location.name
