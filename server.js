@@ -98,4 +98,3 @@ job.start();
 app.listen(port, () => {
   console.log("Lyssnar på port " + port);
 });
-
