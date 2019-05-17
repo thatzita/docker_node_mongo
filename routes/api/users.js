@@ -14,6 +14,9 @@ router.get("/getuser", (req, res) => {
 
   User.findOne({ id: id }, (err, doc) => {
     if (err) res.send(err);
+    Location.deleteMany({ user_id: id }, (err, doc) => {
+      if (err) console.log(err);
+    });
     getAllUserInfo(token);
   });
 });
@@ -124,11 +127,11 @@ async function getAllUserInfo(token) {
       bio: userInfo.bio,
       website: userInfo.website,
       followers: userInfo.counts.followed_by,
-      geohash: pinArr //might not be necessary
+      geohash: pinArr
     };
 
-    if (pagination) {
-      searchMorePictures(pagination.next_url, userInfo.id);
+    if (pagination.next_url !== undefined) {
+      searchMorePictures(pagination.next_url, userInfo);
     }
 
     updateDbWithUser(user);
@@ -136,7 +139,7 @@ async function getAllUserInfo(token) {
   }
 }
 
-async function searchMorePictures(url, id) {
+async function searchMorePictures(url, userInfo) {
   let userData = null;
   let pagination = null;
   await axios
@@ -148,18 +151,14 @@ async function searchMorePictures(url, id) {
     .catch(err => {
       console.log(err);
     });
-  pins(userData, id);
-  if (pagination) {
-    searchMorePictures(pagination.next_url);
+  pins(userData, userInfo);
+  if (pagination.next_url !== undefined) {
+    searchMorePictures(pagination.next_url, userInfo);
   }
 }
 
 async function updatePictures(arr, id) {
   let pinArr = arr;
-
-  // await Location.deleteMany({ user_id: id }, (err, doc) => {
-  //   if (err) console.log(err);
-  // });
 
   await pinArr.forEach(pin => {
     let query = pin.image_id;
@@ -178,7 +177,6 @@ async function updatePictures(arr, id) {
   });
 }
 
-//UPDATE USER
 function updateDbWithUser(user) {
   let options = {
     upsert: true,
@@ -190,7 +188,7 @@ function updateDbWithUser(user) {
   });
 }
 
-function pins(userData, userId) {
+function pins(userData, userInfo) {
   let pinArr = [];
   userData.forEach(info => {
     if (info.location) {
@@ -261,7 +259,7 @@ function pins(userData, userId) {
       }
     }
   });
-  updatePictures(pinArr, userId);
+  updatePictures(pinArr, userInfo.id);
 }
 
 module.exports = router;
