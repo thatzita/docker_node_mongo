@@ -41,38 +41,11 @@ app.use("/api/users", users);
 app.use("/api/locations", locations);
 app.use("/api/locationinfo", locationInfo);
 
-// CRONJOB TICKING EVERY 2ND HOUR - UPDATING FROM USER
-// 0 */2 * * *
-// var job = new cronJob({
-//   // cronTime: "* * * * * ",
-//   cronTime: "0 */2 * * *",
-//   onTick: function() {
-//     User.find()
-//       .sort({ updatedAt: 1 })
-//       .limit(2) //oldest first
-//       .exec((err, data) => {
-//         if (err) console.log(err);
-//         data.forEach(user => {
-//           User.findOneAndUpdate(
-//             { id: user.id },
-//             { updatedAt: new Date() },
-//             (err, doc) => {
-//               if (err) console.log(err);
-//               functions.facebookPlaces(user);
-//             }
-//           );
-//         });
-//       });
-//   },
-//   start: false
-// });
-// job.start();
-
 // CRONJOB TICKING EVERY 2ND HOUR - UPDATING FROM LOCATIONS
 // 0 */2 * * *
 var job = new cronJob({
- //  cronTime: "* * * * * ",
-   cronTime: "0 */2 * * *",
+  //  cronTime: "* * * * * ",
+  cronTime: "0 */2 * * *",
   onTick: function() {
     Location.find()
       .sort({ updatedAt: 1 })

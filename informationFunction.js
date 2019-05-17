@@ -2,8 +2,8 @@ const axios = require("axios");
 const LocationInformation = require("../../models/LocationInformation");
 
 facebookPlaces = place => {
-  const token = "530772680664297|AiRN2CSKLnWYiJxtH91A1PUj_aA";
-  console.log(place);
+  // const token = "530772680664297|AiRN2CSKLnWYiJxtH91A1PUj_aA"; //thatzita token
+  const token = "604809756608949|Wymhi1EyvPBJvbMsrr2K0n2EAzM"; //indulge token
 
   let lat = place.location_info.latitude;
   let lng = place.location_info.longitude;
