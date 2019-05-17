@@ -8,6 +8,8 @@ router.use(bodyParser.urlencoded({ extended: true }));
 
 const type = require("../../categoryList");
 
+const restaurant = type.category_restaurant;
+
 // const category = type.category_restaurant;
 
 const User = require("../../models/User");
@@ -51,18 +53,24 @@ async function getAllUserInfo(token) {
     let pinArr = [];
     userData.forEach(info => {
       if (info.location) {
+	console.log('place name ', info.location.name);
+	console.log('list ',  restaurant);
         // let pictureGeohash = Geohash.encode(
         //   info.location.latitude,
         //   info.location.longitude
         // );
-        LocationInformation.findOne({
-          "location_info.name": info.location.name,
-          "location_info.latitude": info.location.latitude,
-          "location_info.longitude": info.location.longitude
-        })
-          .then(place => {
-            if (place) {
-              console.log("typeInfo: ", place.category_list.name);
+        LocationInformation.findOne(
+          {
+            name: info.location.name,
+            latitude: info.location.latitude,
+            longitude: info.location.longitude
+          },
+          (err, doc) => {
+		console.log( doc);
+            if (err) res.send(err);
+            // .then(place => {
+            if (doc) {
+              console.log("typeInfo: ", doc.category_list[0].name);
 
               //klip in
               let image_id = info.images.standard_resolution.url;
@@ -71,9 +79,10 @@ async function getAllUserInfo(token) {
               let caption;
               let category_type = "other"; // default type
 
-              if (type.category_restaurant.includes(place.category_list.name)) {
+               if (restaurant.includes(doc.category_list[0].name)) {
+		console.log('true');
                 category_type = "restaurant";
-              }
+               }
 
               if (info.caption !== null) {
                 caption = info.caption.text;
@@ -157,8 +166,8 @@ async function getAllUserInfo(token) {
                 "could not find a fb place something went wrong in LocationInformation.findOne"
               );
             }
-          })
-          .catch(err => console.log(err));
+          }
+        );
       }
     });
   }
@@ -200,3 +209,4 @@ function updateDbWithUser(user) {
 }
 
 module.exports = router;
+

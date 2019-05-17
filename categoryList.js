@@ -1576,12 +1576,14 @@ const category_things_to_do = [
   "Balloonport"
 ];
 
-(module.exports = category_bar),
-  category_cafe,
-  category_geographical_places,
-  category_hotel,
-  category_other,
-  category_places_to_visit,
-  category_restaurant,
-  category_shoping,
-  category_things_to_do;
+module.exports = {
+  category_bar: category_bar,
+  category_cafe: category_cafe,
+  category_geographical_places: category_geographical_places,
+  category_hotel: category_hotel,
+  category_other: category_other,
+  category_places_to_visit: category_places_to_visit,
+  category_restaurant: category_restaurant,
+  category_shoping: category_shoping,
+  category_things_to_do: category_things_to_do
+};
