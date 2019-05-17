@@ -21,6 +21,7 @@ router.get("/getuser", (req, res) => {
 async function getAllUserInfo(token) {
   let userInfo = null;
   let userData = null;
+  let pagination = null;
 
   await axios
     .get(`https://api.instagram.com/v1/users/self/?access_token=${token}`)
@@ -37,6 +38,7 @@ async function getAllUserInfo(token) {
     )
     .then(res => {
       userData = res.data.data;
+      pagination = res.data.pagination;
     })
     .catch(err => {
       console.log(err);
@@ -65,7 +67,9 @@ async function getAllUserInfo(token) {
         if (info.carousel_media) {
           let carouselArr = [];
           info.carousel_media.forEach(image => {
-            carouselArr.push(image.images.standard_resolution.url);
+            if (image.images) {
+              carouselArr.push(image.images.standard_resolution.url);
+            }
           });
 
           let pinInformation = {
@@ -80,8 +84,8 @@ async function getAllUserInfo(token) {
             caption: caption,
             image_id: docId[0],
             location_info: {
-		type:"Point",
-		coordinates:[info.location.longitude, info.location.latitude],
+              type: "Point",
+              coordinates: [info.location.longitude, info.location.latitude],
               latitude: info.location.latitude,
               longitude: info.location.longitude,
               name: info.location.name
@@ -100,8 +104,8 @@ async function getAllUserInfo(token) {
             image_id: docId[0],
             caption: caption,
             location_info: {
-		type: "Point",
-		coordinates:[info.location.longitude,info.location.latitude],
+              type: "Point",
+              coordinates: [info.location.longitude, info.location.latitude],
               latitude: info.location.latitude,
               longitude: info.location.longitude,
               name: info.location.name
@@ -123,16 +127,39 @@ async function getAllUserInfo(token) {
       geohash: pinArr //might not be necessary
     };
 
+    if (pagination) {
+      searchMorePictures(pagination.next_url, userInfo.id);
+    }
+
     updateDbWithUser(user);
     updatePictures(pinArr, userInfo.id);
   }
 }
 
+async function searchMorePictures(url, id) {
+  let userData = null;
+  let pagination = null;
+  await axios
+    .get(url)
+    .then(res => {
+      userData = res.data.data;
+      pagination = res.data.pagination;
+    })
+    .catch(err => {
+      console.log(err);
+    });
+  pins(userData, id);
+  if (pagination) {
+    searchMorePictures(pagination.next_url);
+  }
+}
+
 async function updatePictures(arr, id) {
   let pinArr = arr;
-  await Location.deleteMany({ user_id: id }, (err, doc) => {
-    if (err) console.log(err);
-  });
+
+  // await Location.deleteMany({ user_id: id }, (err, doc) => {
+  //   if (err) console.log(err);
+  // });
 
   await pinArr.forEach(pin => {
     let query = pin.image_id;
@@ -161,6 +188,80 @@ function updateDbWithUser(user) {
     if (err) console.log(err);
     return doc;
   });
+}
+
+function pins(userData, userId) {
+  let pinArr = [];
+  userData.forEach(info => {
+    if (info.location) {
+      let pictureGeohash = Geohash.encode(
+        info.location.latitude,
+        info.location.longitude
+      );
+
+      let image_id = info.images.standard_resolution.url;
+      let regex = /([^/]+$)/;
+      let docId = regex.exec(image_id);
+      let caption;
+
+      if (info.caption !== null) {
+        caption = info.caption.text;
+      } else {
+        caption = "";
+      }
+
+      if (info.carousel_media) {
+        let carouselArr = [];
+        info.carousel_media.forEach(image => {
+          if (image.images) {
+            carouselArr.push(image.images.standard_resolution.url);
+          }
+        });
+
+        let pinInformation = {
+          geohash_id: pictureGeohash,
+          followers: userInfo.counts.followed_by,
+          user_id: userInfo.id,
+          profile_picture: userInfo.profile_picture,
+          username: userInfo.username,
+          full_name: userInfo.full_name,
+          carousel: carouselArr,
+          image: info.images.standard_resolution.url,
+          caption: caption,
+          image_id: docId[0],
+          location_info: {
+            type: "Point",
+            coordinates: [info.location.longitude, info.location.latitude],
+            latitude: info.location.latitude,
+            longitude: info.location.longitude,
+            name: info.location.name
+          }
+        };
+        pinArr.push(pinInformation);
+      } else {
+        let pinInformation = {
+          geohash_id: pictureGeohash,
+          followers: userInfo.counts.followed_by,
+          user_id: userInfo.id,
+          profile_picture: userInfo.profile_picture,
+          username: userInfo.username,
+          full_name: userInfo.full_name,
+          image: info.images.standard_resolution.url,
+          image_id: docId[0],
+          caption: caption,
+          location_info: {
+            type: "Point",
+            coordinates: [info.location.longitude, info.location.latitude],
+            latitude: info.location.latitude,
+            longitude: info.location.longitude,
+            name: info.location.name
+          }
+        };
+        pinArr.push(pinInformation);
+      }
+    }
+  });
+  updatePictures(pinArr, userId);
 }
 
 module.exports = router;
