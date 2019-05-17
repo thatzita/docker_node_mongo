@@ -7,13 +7,14 @@ const userSchema = new Schema(
     followers: Number,
     full_name: String,
     profile_picture: String,
-    geohash: Array,
+    facebook_friends: Array,
+    facebook_token: String,
     username: String,
     website: String,
     id: String,
     bio: String
   },
-{timestamps: true}
+  { timestamps: true }
 );
 
 module.exports = User = mongoose.model("users", userSchema);

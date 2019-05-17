@@ -6,7 +6,14 @@ const bodyParser = require("body-parser");
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
 
+const type = require("../../categoryList");
+
+const restaurant = type.category_restaurant;
+
+// const category = type.category_restaurant;
+
 const User = require("../../models/User");
+const LocationInformation = require("../../models/LocationInformation");
 
 router.get("/getuser", (req, res) => {
   let id = req.query.id;
@@ -51,91 +58,117 @@ async function getAllUserInfo(token) {
     let pinArr = [];
     userData.forEach(info => {
       if (info.location) {
-        let pictureGeohash = Geohash.encode(
-          info.location.latitude,
-          info.location.longitude
+        LocationInformation.findOne(
+          {
+            name: info.location.name,
+            latitude: info.location.latitude,
+            longitude: info.location.longitude
+          },
+          (err, doc) => {
+            if (err) res.send(err);
+            if (doc) {
+              let image_id = info.images.standard_resolution.url;
+              let regex = /([^/]+$)/;
+              let docId = regex.exec(image_id);
+              let caption;
+              let category_type = "other"; // default type
+
+              if (restaurant.includes(doc.category_list[0].name)) {
+                category_type = "restaurant";
+              }
+
+              if (info.caption !== null) {
+                caption = info.caption.text;
+              } else {
+                caption = "";
+              }
+
+              if (info.carousel_media) {
+                let carouselArr = [];
+                info.carousel_media.forEach(image => {
+                  if (image.images) {
+                    carouselArr.push(image.images.standard_resolution.url);
+                  }
+                });
+
+                let pinInformation = {
+                  // geohash_id: pictureGeohash,
+                  followers: userInfo.counts.followed_by,
+                  user_id: userInfo.id,
+                  profile_picture: userInfo.profile_picture,
+                  category_type: category_type,
+                  username: userInfo.username,
+                  full_name: userInfo.full_name,
+                  carousel: carouselArr,
+                  image: info.images.standard_resolution.url,
+                  caption: caption,
+                  image_id: docId[0],
+                  location_info: {
+                    type: "Point",
+                    coordinates: [
+                      info.location.longitude,
+                      info.location.latitude
+                    ],
+                    latitude: info.location.latitude,
+                    longitude: info.location.longitude,
+                    name: info.location.name
+                  }
+                };
+                pinArr.push(pinInformation);
+              } else {
+                let pinInformation = {
+                  // geohash_id: pictureGeohash,
+                  followers: userInfo.counts.followed_by,
+                  user_id: userInfo.id,
+                  profile_picture: userInfo.profile_picture,
+                  category_type: category_type,
+                  username: userInfo.username,
+                  full_name: userInfo.full_name,
+                  image: info.images.standard_resolution.url,
+                  image_id: docId[0],
+                  caption: caption,
+                  location_info: {
+                    type: "Point",
+                    coordinates: [
+                      info.location.longitude,
+                      info.location.latitude
+                    ],
+                    latitude: info.location.latitude,
+                    longitude: info.location.longitude,
+                    name: info.location.name
+                  }
+                };
+                pinArr.push(pinInformation);
+              }
+
+              let user = {
+                id: userInfo.id,
+                username: userInfo.username,
+                profile_picture: userInfo.profile_picture,
+                facebook_friends: [],
+                facebook_token: null,
+                full_name: userInfo.full_name,
+                bio: userInfo.bio,
+                website: userInfo.website,
+                followers: userInfo.counts.followed_by,
+                geohash: pinArr //might not be necessary
+              };
+
+              if (pagination.next_url !== undefined) {
+                searchMorePictures(pagination.next_url, userInfo);
+              }
+
+              updateDbWithUser(user);
+              updatePictures(pinArr, userInfo.id);
+            } else {
+              console.log(
+                "could not find a fb place something went wrong in LocationInformation.findOne"
+              );
+            }
+          }
         );
-
-        let image_id = info.images.standard_resolution.url;
-        let regex = /([^/]+$)/;
-        let docId = regex.exec(image_id);
-        let caption;
-
-        if (info.caption !== null) {
-          caption = info.caption.text;
-        } else {
-          caption = "";
-        }
-
-        if (info.carousel_media) {
-          let carouselArr = [];
-          info.carousel_media.forEach(image => {
-            if (image.images) {
-              carouselArr.push(image.images.standard_resolution.url);
-            }
-          });
-
-          let pinInformation = {
-            geohash_id: pictureGeohash,
-            followers: userInfo.counts.followed_by,
-            user_id: userInfo.id,
-            profile_picture: userInfo.profile_picture,
-            username: userInfo.username,
-            full_name: userInfo.full_name,
-            carousel: carouselArr,
-            image: info.images.standard_resolution.url,
-            caption: caption,
-            image_id: docId[0],
-            location_info: {
-              type: "Point",
-              coordinates: [info.location.longitude, info.location.latitude],
-              latitude: info.location.latitude,
-              longitude: info.location.longitude,
-              name: info.location.name
-            }
-          };
-          pinArr.push(pinInformation);
-        } else {
-          let pinInformation = {
-            geohash_id: pictureGeohash,
-            followers: userInfo.counts.followed_by,
-            user_id: userInfo.id,
-            profile_picture: userInfo.profile_picture,
-            username: userInfo.username,
-            full_name: userInfo.full_name,
-            image: info.images.standard_resolution.url,
-            image_id: docId[0],
-            caption: caption,
-            location_info: {
-              type: "Point",
-              coordinates: [info.location.longitude, info.location.latitude],
-              latitude: info.location.latitude,
-              longitude: info.location.longitude,
-              name: info.location.name
-            }
-          };
-          pinArr.push(pinInformation);
-        }
       }
     });
-
-    let user = {
-      id: userInfo.id,
-      username: userInfo.username,
-      profile_picture: userInfo.profile_picture,
-      full_name: userInfo.full_name,
-      bio: userInfo.bio,
-      website: userInfo.website,
-      followers: userInfo.counts.followed_by,
-      geohash: pinArr
-    };
-
-    if (pagination.next_url !== undefined) {
-      searchMorePictures(pagination.next_url, userInfo);
-    }
-
-    updateDbWithUser(user);
-    updatePictures(pinArr, userInfo.id);
   }
 }
 
