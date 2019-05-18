@@ -35,11 +35,15 @@ router.put("/box", (req, res) => {
     .box(reqData.box[0], reqData.box[1])
     .exec(function(err, data) {
       if (reqData.view === "myView") {
-        result = data.filter(doc => doc.user_id === userId);
+        result = data.filter(
+          doc => doc.user_id === userId && doc.category_type === "restaurant"
+        );
         result.slice(0, 10);
         res.send(result);
       } else if (reqData.view === "explore") {
-        result = data.filter(doc => doc.user_id !== userId);
+        result = data.filter(
+          doc => doc.user_id !== userId && doc.category_type === "restaurant"
+        );
         let removeDup = removeDuplicates(result, "location_info", "name");
         let sortAfterFollowers = removeDup
           .sort((a, b) => b.followers - a.followers)
@@ -57,3 +61,4 @@ function removeDuplicates(array, key, key2) {
 }
 
 module.exports = router;
+
