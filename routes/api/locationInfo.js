@@ -30,8 +30,9 @@ router.put("/placepictures", (req, res) => {
     {
       "location_info.name": info.name,
       "location_info.latitude": info.lat,
-      "location_info.longitude": info.lng
-    },
+      "location_info.longitude": info.lng,
+	  category_type: "restaurant"    
+},
     function(err, doc) {
       res.send(doc);
     }
