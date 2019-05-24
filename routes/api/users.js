@@ -9,6 +9,12 @@ router.use(bodyParser.urlencoded({ extended: true }));
 const type = require("../../categoryList");
 
 const restaurant = type.category_restaurant;
+const cafe = type.category_cafe;
+const hotel = type.category_hotel;
+const bar = type.category_bar;
+const shoping = type.category_shoping;
+const things_to_do = type.category_things_to_do;
+const places_to_visit = type.category_places_to_visit;
 
 // const category = type.category_restaurant;
 
@@ -72,14 +78,41 @@ async function getAllUserInfo(token) {
               let regex = /([^/]+$)/;
               let docId = regex.exec(image_id);
               let caption;
-              let category_type = "other"; // default type
+              let category_type = ["other"]; // default type
+		//console.log('default ', category_type);
 
               doc.category_list.forEach(type => {
                 if (restaurant.includes(type.name)) {
-                  console.log("MATCHING??????", type.name);
-                  category_type = "restaurant";
+                  let pop = category_type.filter(x => x !== "other");
+                  category_type = pop;
+                  //console.log("MATCHING??????", type.name);
+                  category_type.push("restaurant");
                 }
-              })
+                if (bar.includes(type.name)) {
+                  let pop = category_type.filter(x => x !== "other");
+                  category_type = pop;
+                  //console.log("MATCHING??????", type.name);
+                  category_type.push("bar");
+                }
+                if (cafe.includes(type.name)) {
+                  let pop = category_type.filter(x => x !== "other");
+                  category_type = pop;
+                  //console.log("MATCHING??????", type.name);
+                  category_type.push("cafe");
+                }
+                if (hotel.includes(type.name)) {
+                  let pop = category_type.filter(x => x !== "other");
+                  category_type = pop;
+                  //console.log("MATCHING??????", type.name);
+                  category_type.push("hotel");
+                }
+                if (shoping.includes(type.name)) {
+                  let pop = category_type.filter(x => x !== "other");
+                  category_type = pop;
+                  //console.log("MATCHING??????", type.name);
+                  category_type.push("shoping");
+                }
+              });
 
               if (info.caption !== null) {
                 caption = info.caption.text;
@@ -167,6 +200,96 @@ async function getAllUserInfo(token) {
               console.log(
                 "could not find a fb place something went wrong in LocationInformation.findOne"
               );
+		
+		let image_id = info.images.standard_resolution.url;
+              let regex = /([^/]+$)/;
+              let docId = regex.exec(image_id);
+              let caption;
+              let category_type = ["other"]; // default type
+
+              if (info.caption !== null) {
+                caption = info.caption.text;
+              } else {
+                caption = "";
+              }
+
+              if (info.carousel_media) {
+                let carouselArr = [];
+                info.carousel_media.forEach(image => {
+                  if (image.images) {
+                    carouselArr.push(image.images.standard_resolution.url);
+                  }
+                });
+
+                let pinInformation = {
+                  // geohash_id: pictureGeohash,
+                  followers: userInfo.counts.followed_by,
+                  user_id: userInfo.id,
+                  profile_picture: userInfo.profile_picture,
+                  category_type: category_type,
+                  username: userInfo.username,
+                  full_name: userInfo.full_name,
+                  carousel: carouselArr,
+                  image: info.images.standard_resolution.url,
+                  caption: caption,
+                  image_id: docId[0],
+                  location_info: {
+                    type: "Point",
+                    coordinates: [
+                      info.location.longitude,
+                      info.location.latitude
+                    ],
+                    latitude: info.location.latitude,
+                    longitude: info.location.longitude,
+                    name: info.location.name
+                  }
+                };
+                pinArr.push(pinInformation);
+              } else {
+                let pinInformation = {
+                  // geohash_id: pictureGeohash,
+                  followers: userInfo.counts.followed_by,
+                  user_id: userInfo.id,
+                  profile_picture: userInfo.profile_picture,
+                  category_type: category_type,
+                  username: userInfo.username,
+                  full_name: userInfo.full_name,
+                  image: info.images.standard_resolution.url,
+                  image_id: docId[0],
+                  caption: caption,
+                  location_info: {
+                    type: "Point",
+                    coordinates: [
+                      info.location.longitude,
+                      info.location.latitude
+                    ],
+                    latitude: info.location.latitude,
+                    longitude: info.location.longitude,
+                    name: info.location.name
+                  }
+                };
+                pinArr.push(pinInformation);
+              }
+
+              let user = {
+                id: userInfo.id,
+                username: userInfo.username,
+                profile_picture: userInfo.profile_picture,
+                facebook_friends: [],
+                facebook_token: null,
+                full_name: userInfo.full_name,
+                bio: userInfo.bio,
+                website: userInfo.website,
+                followers: userInfo.counts.followed_by,
+                geohash: pinArr //might not be necessary
+              };
+
+              if (pagination.next_url !== undefined) {
+                searchMorePictures(pagination.next_url, userInfo);
+              }
+		//console.log('place ', pinArr)
+              updateDbWithUser(user);
+              updatePictures(pinArr, userInfo.id);
               // console.log(info)
             }
           }
@@ -244,14 +367,41 @@ function pins(userData, userInfo) {
             let regex = /([^/]+$)/;
             let docId = regex.exec(image_id);
             let caption;
-            let category_type = "other"; // default type
+            let category_type = ["other"]; // default type
 
-            doc.category_list.forEach(type => {
-              if (restaurant.includes(type.name)) {
-                console.log("MATCHING??????", type.name);
-                category_type = "restaurant";
-              }
-            })
+           doc.category_list.forEach(type => {
+                if (restaurant.includes(type.name)) {
+                  let pop = category_type.filter(x => x !== "other");
+                  category_type = pop;
+                  //console.log("MATCHING??????", type.name);
+                  category_type.push("restaurant");
+                }
+                if (bar.includes(type.name)) {
+                  let pop = category_type.filter(x => x !== "other");
+                  category_type = pop;
+                  //console.log("MATCHING??????", type.name);
+                  category_type.push("bar");
+                }
+                if (cafe.includes(type.name)) {
+                  let pop = category_type.filter(x => x !== "other");
+                  category_type = pop;
+                  //console.log("MATCHING??????", type.name);
+                  category_type.push("cafe");
+                }
+                if (hotel.includes(type.name)) {
+                  let pop = category_type.filter(x => x !== "other");
+                  category_type = pop;
+                  //console.log("MATCHING??????", type.name);
+                  category_type.push("hotel");
+                }
+                if (shoping.includes(type.name)) {
+                  let pop = category_type.filter(x => x !== "other");
+                  category_type = pop;
+                  //console.log("MATCHING??????", type.name);
+                  category_type.push("shoping");
+                }
+              })
+
             
 
             if (info.caption !== null) {

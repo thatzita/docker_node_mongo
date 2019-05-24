@@ -14,7 +14,7 @@ const locationSchema = new Schema(
     profile_picture: String,
     user_id: String,
     username: String,
-    category_type: String
+    category_type: Array
   },
   { timestamps: true }
 );
