@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const axios = require("axios");
-const Geohash = require("latlon-geohash");
 const bodyParser = require("body-parser");
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
@@ -12,11 +11,9 @@ const restaurant = type.category_restaurant;
 const cafe = type.category_cafe;
 const hotel = type.category_hotel;
 const bar = type.category_bar;
-const shoping = type.category_shoping;
+const shopping = type.category_shopping;
 const things_to_do = type.category_things_to_do;
 const places_to_visit = type.category_places_to_visit;
-
-// const category = type.category_restaurant;
 
 const User = require("../../models/User");
 const LocationInformation = require("../../models/LocationInformation");
@@ -27,11 +24,11 @@ router.get("/getuser", (req, res) => {
 
   User.findOne({ id: id }, (err, doc) => {
     if (err) res.send(err);
-    Location.deleteMany({ user_id: id }, (err, doc) => {
-      if (err) console.log(err);
-    });
+    // Location.deleteMany({ user_id: id }, (err, doc) => {
+    //   if (err) console.log(err);
+    // });
 
-    getAllUserInfo(token);
+    getAllUserInfo(token); //send token and data from homescreen and settingscreen the object
   });
 });
 
@@ -39,15 +36,6 @@ async function getAllUserInfo(token) {
   let userInfo = null;
   let userData = null;
   let pagination = null;
-
-  await axios
-    .get(`https://api.instagram.com/v1/users/self/?access_token=${token}`)
-    .then(res => {
-      userInfo = res.data.data;
-    })
-    .catch(err => {
-      console.log(err);
-    });
 
   await axios
     .get(
@@ -78,39 +66,33 @@ async function getAllUserInfo(token) {
               let regex = /([^/]+$)/;
               let docId = regex.exec(image_id);
               let caption;
-              let category_type = ["other"]; // default type
-		//console.log('default ', category_type);
+              let category_type = ["other"];
 
               doc.category_list.forEach(type => {
                 if (restaurant.includes(type.name)) {
                   let pop = category_type.filter(x => x !== "other");
                   category_type = pop;
-                  //console.log("MATCHING??????", type.name);
                   category_type.push("restaurant");
                 }
                 if (bar.includes(type.name)) {
                   let pop = category_type.filter(x => x !== "other");
                   category_type = pop;
-                  //console.log("MATCHING??????", type.name);
                   category_type.push("bar");
                 }
                 if (cafe.includes(type.name)) {
                   let pop = category_type.filter(x => x !== "other");
                   category_type = pop;
-                  //console.log("MATCHING??????", type.name);
                   category_type.push("cafe");
                 }
                 if (hotel.includes(type.name)) {
                   let pop = category_type.filter(x => x !== "other");
                   category_type = pop;
-                  //console.log("MATCHING??????", type.name);
                   category_type.push("hotel");
                 }
-                if (shoping.includes(type.name)) {
+                if (shopping.includes(type.name)) {
                   let pop = category_type.filter(x => x !== "other");
                   category_type = pop;
-                  //console.log("MATCHING??????", type.name);
-                  category_type.push("shoping");
+                  category_type.push("shopping");
                 }
               });
 
@@ -200,8 +182,8 @@ async function getAllUserInfo(token) {
               console.log(
                 "could not find a fb place something went wrong in LocationInformation.findOne"
               );
-		
-		let image_id = info.images.standard_resolution.url;
+
+              let image_id = info.images.standard_resolution.url;
               let regex = /([^/]+$)/;
               let docId = regex.exec(image_id);
               let caption;
@@ -271,23 +253,22 @@ async function getAllUserInfo(token) {
                 pinArr.push(pinInformation);
               }
 
-              let user = {
-                id: userInfo.id,
-                username: userInfo.username,
-                profile_picture: userInfo.profile_picture,
-                facebook_friends: [],
-                facebook_token: null,
-                full_name: userInfo.full_name,
-                bio: userInfo.bio,
-                website: userInfo.website,
-                followers: userInfo.counts.followed_by,
-                geohash: pinArr //might not be necessary
-              };
+              // let user = {
+              //   id: userInfo.id,
+              //   username: userInfo.username,
+              //   profile_picture: userInfo.profile_picture,
+              //   facebook_friends: [],
+              //   facebook_token: null,
+              //   full_name: userInfo.full_name,
+              //   bio: userInfo.bio,
+              //   website: userInfo.website,
+              //   followers: userInfo.counts.followed_by,
+              // };
 
               if (pagination.next_url !== undefined) {
                 searchMorePictures(pagination.next_url, userInfo);
               }
-		//console.log('place ', pinArr)
+              //console.log('place ', pinArr)
               updateDbWithUser(user);
               updatePictures(pinArr, userInfo.id);
               // console.log(info)
@@ -369,40 +350,33 @@ function pins(userData, userInfo) {
             let caption;
             let category_type = ["other"]; // default type
 
-           doc.category_list.forEach(type => {
-                if (restaurant.includes(type.name)) {
-                  let pop = category_type.filter(x => x !== "other");
-                  category_type = pop;
-                  //console.log("MATCHING??????", type.name);
-                  category_type.push("restaurant");
-                }
-                if (bar.includes(type.name)) {
-                  let pop = category_type.filter(x => x !== "other");
-                  category_type = pop;
-                  //console.log("MATCHING??????", type.name);
-                  category_type.push("bar");
-                }
-                if (cafe.includes(type.name)) {
-                  let pop = category_type.filter(x => x !== "other");
-                  category_type = pop;
-                  //console.log("MATCHING??????", type.name);
-                  category_type.push("cafe");
-                }
-                if (hotel.includes(type.name)) {
-                  let pop = category_type.filter(x => x !== "other");
-                  category_type = pop;
-                  //console.log("MATCHING??????", type.name);
-                  category_type.push("hotel");
-                }
-                if (shoping.includes(type.name)) {
-                  let pop = category_type.filter(x => x !== "other");
-                  category_type = pop;
-                  //console.log("MATCHING??????", type.name);
-                  category_type.push("shoping");
-                }
-              })
-
-            
+            doc.category_list.forEach(type => {
+              if (restaurant.includes(type.name)) {
+                let pop = category_type.filter(x => x !== "other");
+                category_type = pop;
+                category_type.push("restaurant");
+              }
+              if (bar.includes(type.name)) {
+                let pop = category_type.filter(x => x !== "other");
+                category_type = pop;
+                category_type.push("bar");
+              }
+              if (cafe.includes(type.name)) {
+                let pop = category_type.filter(x => x !== "other");
+                category_type = pop;
+                category_type.push("cafe");
+              }
+              if (hotel.includes(type.name)) {
+                let pop = category_type.filter(x => x !== "other");
+                category_type = pop;
+                category_type.push("hotel");
+              }
+              if (shopping.includes(type.name)) {
+                let pop = category_type.filter(x => x !== "other");
+                category_type = pop;
+                category_type.push("shopping");
+              }
+            });
 
             if (info.caption !== null) {
               caption = info.caption.text;
@@ -481,4 +455,3 @@ function pins(userData, userInfo) {
 }
 
 module.exports = router;
-
