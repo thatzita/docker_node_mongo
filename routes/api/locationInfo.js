@@ -25,14 +25,12 @@ router.put("/fbplaces", (req, res) => {
 
 router.put("/placepictures", (req, res) => {
   let info = req.body.data;
-  let pictureData;
   Location.find(
     {
       "location_info.name": info.name,
       "location_info.latitude": info.lat,
-      "location_info.longitude": info.lng,
-	  category_type: "restaurant"    
-},
+      "location_info.longitude": info.lng
+    },
     function(err, doc) {
       res.send(doc);
     }
