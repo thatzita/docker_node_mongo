@@ -1178,7 +1178,7 @@ const category_places_to_visit = [
   "Subway Station"
 ];
 
-const category_shoping = [
+const category_shopping = [
   "Shopping & Retail",
   "Camera Store",
   "Antique Store",
@@ -1584,6 +1584,6 @@ module.exports = {
   category_other: category_other,
   category_places_to_visit: category_places_to_visit,
   category_restaurant: category_restaurant,
-  category_shoping: category_shoping,
+  category_shopping: category_shopping,
   category_things_to_do: category_things_to_do
 };
