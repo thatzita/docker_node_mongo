@@ -2,11 +2,7 @@ const express = require("express");
 const router = express.Router();
 const axios = require("axios");
 const bodyParser = require("body-parser");
-router.use(bodyParser.json());
-router.use(bodyParser.urlencoded({ extended: true }));
-
 const type = require("../../categoryList");
-
 const restaurant = type.category_restaurant;
 const cafe = type.category_cafe;
 const hotel = type.category_hotel;
@@ -14,9 +10,10 @@ const bar = type.category_bar;
 const shopping = type.category_shopping;
 const things_to_do = type.category_things_to_do;
 const places_to_visit = type.category_places_to_visit;
-
 const User = require("../../models/User");
 const LocationInformation = require("../../models/LocationInformation");
+router.use(bodyParser.json());
+router.use(bodyParser.urlencoded({ extended: true }));
 
 router.post("/getuser", (req, res) => {
   let data = req.body.userData;
@@ -92,7 +89,6 @@ async function searchMorePictures(nextUrl, userInfo, userId) {
   if (pagination.next_url !== undefined && rateLimit > 50) {
     searchMorePictures(pagination.next_url, userInfo, userId);
   }
-  console.log("Rate limit ", rateLimit);
 }
 
 function structurePictures(userPictures, user, userId) {
@@ -113,7 +109,6 @@ function structurePictures(userPictures, user, userId) {
             let docId = regex.exec(image_id);
             let caption;
             let carouselArr = [];
-
             let category_type = categorizeImages(doc);
 
             if (info.carousel_media) {
@@ -263,6 +258,9 @@ function updateDbWithUser(user, token) {
   User.findOneAndUpdate({ id: user.id }, user, options, (err, doc) => {
     if (err) console.log(err);
     return doc;
+  });
+  Location.deleteMany({ user_id: user.id }, (err, doc) => {
+    if (err) console.log(err);
   });
   getAllInstagramPictures(token, user);
 }
