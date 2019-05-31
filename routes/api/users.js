@@ -152,6 +152,49 @@ function structurePictures(userPictures, user, userId) {
               }
             };
             pictureArr.push(pinInformation);
+          } else {
+            let image_id = info.images.standard_resolution.url;
+            let regex = /([^/]+$)/;
+            let docId = regex.exec(image_id);
+            let caption;
+            let carouselArr = [];
+
+            if (info.carousel_media) {
+              info.carousel_media.forEach(image => {
+                if (image.images) {
+                  carouselArr.push(image.images.standard_resolution.url);
+                }
+              });
+            } else {
+              carouselArr = [];
+            }
+
+            if (info.caption !== null) {
+              caption = info.caption.text;
+            } else {
+              caption = "";
+            }
+
+            let pinInformation = {
+              followers: user.followers,
+              user_id: user.id,
+              profile_picture: user.profile_picture,
+              category_type: ["other"],
+              username: user.username,
+              full_name: user.full_name,
+              carousel: carouselArr,
+              image: info.images.standard_resolution.url,
+              caption: caption,
+              image_id: docId[0],
+              location_info: {
+                type: "Point",
+                coordinates: [info.location.longitude, info.location.latitude],
+                latitude: info.location.latitude,
+                longitude: info.location.longitude,
+                name: info.location.name
+              }
+            };
+            pictureArr.push(pinInformation);
           }
           updatePictures(pictureArr, userId);
         }
