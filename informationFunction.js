@@ -11,7 +11,7 @@ facebookPlaces = place => {
 
   axios
     .get(
-      `https://graph.facebook.com/search?type=place&access_token=${token}&center=${lat},${lng}&fields=location,name,about,category_list,description,payment_options,price_range&distance=10`
+      `https://graph.facebook.com/search?type=place&access_token=${token}&center=${lat},${lng}&fields=location,name,about,category_list,description,payment_options,price_range&distance=100`
     )
     .then(res => {
       let results = res.data.data;
