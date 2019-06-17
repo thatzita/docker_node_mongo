@@ -10,6 +10,7 @@ router.put("/mybox", (req, res) => {
   let reqData = req.body.data;
   let box = reqData.box;
   let userId = reqData.userId;
+  let activeFilter = reqData.activeFilter;
 
   Location.where("location_info")
     .within()
@@ -24,13 +25,13 @@ router.put("/mybox", (req, res) => {
      // res.send(arr);
      if (reqData.view === "myView") {
         result = data.filter(
-          doc => doc.user_id === userId && doc.category_type.includes("restaurant")
+          doc => doc.user_id === userId && doc.category_type.includes(activeFilter)
         );
         result.slice(0, 10);
         res.send(result);
       } else if (reqData.view === "explore") {
         result = data.filter(
-          doc => doc.user_id !== userId && doc.category_type.includes("restaurant")
+          doc => doc.user_id !== userId && doc.category_type.includes(activeFilter)
         );
         let removeDup = removeDuplicates(result, "location_info", "name");
         let sortAfterFollowers = removeDup
