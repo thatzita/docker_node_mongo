@@ -33,11 +33,10 @@ router.put("/mybox", (req, res) => {
         result = data.filter(
           doc => doc.user_id !== userId && doc.category_type.includes(activeFilter)
         );
-        let removeDup = removeDuplicates(result, "location_info", "name");
-        let sortAfterFollowers = removeDup
-          .sort((a, b) => b.followers - a.followers)
-          .slice(0, 10);
-        res.send(sortAfterFollowers);
+	let sortAfterFollowers = result.sort((a, b) => b.followers - a.followers).slice(0, 10);
+	let removeDup = removeDuplicates(sortAfterFollowers, "location_info", "name");
+	res.send(removeDup);
+	    
       }
     });
 });
@@ -70,11 +69,11 @@ router.put("/box", (req, res) => {
         result = data.filter(
           doc => doc.user_id !== userId && doc.category_type.includes(activeFilter)
         );
-        let removeDup = removeDuplicates(result, "location_info", "name");
-        let sortAfterFollowers = removeDup
-          .sort((a, b) => b.followers - a.followers)
-          .slice(0, 10);
-        res.send(sortAfterFollowers);
+	      
+	let sortAfterFollowers = result.sort((a, b) => b.followers - a.followers).slice(0, 10);
+	let removeDup = removeDuplicates(sortAfterFollowers, "location_info", "name");
+	res.send(removeDup);     
+	          
       }
     });
 });
