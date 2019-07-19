@@ -25,7 +25,7 @@ router.put("/mybox", (req, res) => {
      // res.send(arr);
      if (reqData.view === "myView") {
         result = data.filter(
-          doc => doc.user_id === userId && doc.category_type.includes(activeFilter)
+          doc => doc.user_id === userId 
         );
         result.slice(0, 10);
         res.send(result);
@@ -56,7 +56,7 @@ router.put("/box", (req, res) => {
         result = data.filter(
           doc => { 
 		//console.log( 'type = ', doc.category_type.includes(activeFilter));
-		if(doc.user_id === userId && doc.category_type.includes(activeFilter)){
+		if(doc.user_id === userId){
 		//	console.log('found ', doc);
 			return doc;
 		}		
