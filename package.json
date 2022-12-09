@@ -12,7 +12,7 @@
     "axios": "^0.19.0",
     "body-parser": "^1.18.3",
     "cron": "^1.7.0",
-    "express": "^4.16.4",
+    "express": "^4.17.3",
     "latlon-geohash": "^1.1.0",
     "mongoose": "^5.4.20"
   }
